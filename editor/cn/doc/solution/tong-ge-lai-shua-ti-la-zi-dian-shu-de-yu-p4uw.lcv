@@ -1,0 +1,74 @@
+今天是我坚持写题解的第 76 天！
+
+![](https://pic.leetcode-cn.com/1634575408-RdBFaH-file_1634575422953)
+
+# 方法、字典树
+
+题目已经非常明显了，肯定是使用字典树来求解，关键在于 `.` 的特殊处理，我们这里使用递归来查找字符串，本题中使用递归比迭代法代码要简单许多。
+
+请看代码：
+
+* java
+
+```java
+class WordDictionary {
+
+    Node root;
+
+    public WordDictionary() {
+        root = new Node();
+    }
+    
+    public void addWord(String word) {
+        Node node = root;
+        for (int i = 0; i < word.length(); i++) {
+            int idx = word.charAt(i) - 'a';
+            if (node.nexts[idx] == null) {
+                node.nexts[idx] = new Node();
+            }
+            node = node.nexts[idx];
+        }
+        node.isEnd = true;
+    }
+    
+    public boolean search(String word) {
+        return search(word, root, 0);
+    }
+
+    private boolean search(String word, Node node, int i) {
+        if (node == null) return false;
+        if (i >= word.length()) return node.isEnd;
+
+        char c = word.charAt(i);
+        if (c == '.') {
+            for (Node next : node.nexts) {
+                if (search(word, next, i + 1)) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return search(word, node.nexts[c - 'a'], i + 1);
+        }
+    }
+
+    class Node {
+        Node[] nexts = new Node[26];
+        boolean isEnd = false;
+    }
+
+}
+```
+
+- 时间复杂度：`addWord()` 的时间复杂度为 $O(n)$，n 为输入单词的平均长度，`search()` 的平均时间复杂度为 $O(n)$，最坏情况下查找的单词全是点，所以最坏的时间复杂度为 $O(n^C)$，C 固定为 26。
+- 空间复杂度：$O(C * N)$，C 固定为 26，N 为输入单词的长度之和，最坏情况为所有单词都没有共同的前缀，每个单词中的每个字母都要占用 $O(C)$ 的空间。
+
+运行结果如下：
+
+![image-20211019004056063](https://pic.leetcode-cn.com/1634575408-jUanVC-file_1634575422998)
+
+# 最后
+
+**如果对你有帮助，请点个赞吧，谢谢^^**
+
+也可以[关注我](https://leetcode-cn.com/u/tong-zhu/)（公号：彤哥来刷题啦），每日分享题解，一起刷题，一起拿全家桶。
